@@ -2,6 +2,8 @@ package com.androidproject.webservertest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +14,8 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
     /** Called when the activity is first created. */
     Button start, stop;
+    Intent mServiceIntent;
+    private TestServices mYourService;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -20,26 +24,35 @@ public class MainActivity extends AppCompatActivity {
         start = findViewById(R.id.buttonStart);
         stop = findViewById(R.id.buttonStop);
 
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.cheng5000.clientapp");
+        if (launchIntent != null) {
+            startActivity(launchIntent);//null pointer check in case package name was not found
+        }
 
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TestServices.class);
-                startService(intent);
-            }
-        });
+        mYourService = new TestServices();
+        mServiceIntent = new Intent(this, mYourService.getClass());
+        if (!isMyServiceRunning(mYourService.getClass())) {
+            startService(mServiceIntent);
+        }
+    }
 
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TestServices.class);
-                stopService(intent);
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.w ("Service status", "Running");
+                return true;
             }
-        });
+        }
+        Log.w ("Service status", "Not running");
+        return false;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        stopService(mServiceIntent);
+        super.onDestroy();
     }
 
 }
