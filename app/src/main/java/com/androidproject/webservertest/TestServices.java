@@ -153,7 +153,7 @@ public class TestServices extends Service {
 
                 if (postParameter.size() != 0) {
                     sNRIC = session.getParms().get("idcardNum");
-                    param = convertWithIteration(postParameter);
+                    param  = "{idcardNum:"+sNRIC+";deviceKey:"+sDeviceKey+"}";
                     RequestLog requestLog = new RequestLog();
                     requestLog.setId(sUUID);
                     requestLog.setRequest(method.toString() + param +";Date=" + sDate);
@@ -202,15 +202,15 @@ public class TestServices extends Service {
             }
         }
 
-        public String convertWithIteration(Map<String, ?> map) {
-            StringBuilder mapAsString = new StringBuilder("{");
-            for (String key : map.keySet()) {
-                if(key == "idcardNum" || key == "deviceKey") {
-                    mapAsString.append(key + "=" + map.get(key) + ", ");
-                }
-            }
-            mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
-            return mapAsString.toString();
-        }
+//        public String convertWithIteration(Map<String, ?> map) {
+//            StringBuilder mapAsString = new StringBuilder("{");
+//            for (String key : map.keySet()) {
+//                if(key == "idcardNum" || key == "deviceKey") {
+//                    mapAsString.append(key + "=" + map.get(key) + ", ");
+//                }
+//            }
+//            mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
+//            return mapAsString.toString();
+//        }
     }
 }
