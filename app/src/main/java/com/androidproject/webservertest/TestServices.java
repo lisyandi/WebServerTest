@@ -105,78 +105,95 @@ public class TestServices extends Service {
 
         @Override
         public Response serve(IHTTPSession session) {
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
-            databaseAccess.open();
-            Process process = new Process();
-            String deviceID = process.getDeviceID();
-            String msg = "<html><body><h1>Hello server</h1>\n";
-            Map<String, String> files = new HashMap<String, String>();
-            Method method = session.getMethod();
-            if (Method.PUT.equals(method) || Method.POST.equals(method)) {
-                try {
-                    session.parseBody(files);
-                } catch (IOException ioe) {
-                    //return new newFixedLengthResponse (Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
-                } catch (ResponseException re) {
-                    //return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
+            try {
+                DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
+                databaseAccess.open();
+                Process process = new Process();
+                String sUUID = UUID.randomUUID().toString();
+                String sNRIC = "";
+
+                Preferences preferences = new Preferences();
+                String ProcessF = preferences.getProcessF(getApplicationContext());
+
+                Date date = Calendar.getInstance().getTime();
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String sDate = formatter.format(date);
+
+                BranchConfig config = databaseAccess.getConfig();
+                String config_code = config.getCode();
+                String config_name = config.getCode();
+                String config_checkProcess = config.getCheck_process();
+                String config_deviceKey = config.getUuid();
+
+                // Get Parameters
+                String msg = "";
+                Map<String, String> files = new HashMap<String, String>();
+                Method method = session.getMethod();
+                if (Method.PUT.equals(method) || Method.POST.equals(method)) {
+                    try {
+                        session.parseBody(files);
+                    } catch (IOException ioe) {
+
+                    } catch (ResponseException re) {
+
+                    }
                 }
-            }
-            //String postBody = session.getQueryParameterString();
-            String param = "";
-            Map<String, String> postParameter = session.getParms();
-            if(postParameter.size() != 0) {
-                param = convertWithIteration(postParameter);
-                RequestLog requestLog = new RequestLog();
-                requestLog.setId(UUID.randomUUID().toString());
-                requestLog.setRequest(method.toString() + param +";DeviceKey:"+deviceID);
-                databaseAccess.addRequestLog(requestLog);
-            }
-            else{
-                RequestLog requestLog = new RequestLog();
-                requestLog.setId(UUID.randomUUID().toString());
-                requestLog.setRequest(method.toString()+";DeviceKey:"+deviceID);
-                databaseAccess.addRequestLog(requestLog);
-            }
 
-            Preferences preferences = new Preferences();
-            //String LastNRIC = preferences.getLastNRIC(getApplicationContext());
-            String ProcessF = preferences.getProcessF(getApplicationContext());
-            BranchConfig config = databaseAccess.getConfig();
-            Date date = Calendar.getInstance().getTime();
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String sDate = formatter.format(date);
-            String sNRIC = "s9046831f";
-            String sMaskNRIC = sNRIC.replaceAll("\\w(?=\\w{4})", "X");
+                String param = "";
+                Map<String, String> postParameter = session.getParms();
+                String sDeviceKey = session.getParms().get("deviceKey");
 
-            if(ProcessF == "1") {
-
-                boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
-                if (result) {
-                    msg ="<p>Success</p>";
+                if (postParameter.size() != 0) {
+                    sNRIC = session.getParms().get("idcardNum");
+                    param = convertWithIteration(postParameter);
+                    RequestLog requestLog = new RequestLog();
+                    requestLog.setId(sUUID);
+                    requestLog.setRequest(method.toString() + param +";Date=" + sDate);
+                    databaseAccess.addRequestLog(requestLog);
                 } else {
-                    msg ="<p>Failed</p>";
+                    RequestLog requestLog = new RequestLog();
+                    requestLog.setId(sUUID);
+                    requestLog.setRequest(method.toString());
+                    databaseAccess.addRequestLog(requestLog);
                 }
 
-                EntryLog log = new EntryLog();
-                log.setId(UUID.randomUUID().toString());
-                log.setNric(sMaskNRIC);
-                log.setProcess_date(sDate);
-                databaseAccess.addEntryLog(log);
-                preferences.setLastNRIC(getApplicationContext(), "0");
-            }
-            else{
-                preferences.setLastNRIC(getApplicationContext(), "1");
-            }
+                String action = config_checkProcess == "1" ? "CHECK_IN" : "CHECK_OUT";
 
-            databaseAccess.close();
+                if (config_deviceKey == sDeviceKey) {
+                    if (ProcessF == "1") {
+                        boolean result = process.Action(action, "", config_code, config_name, sNRIC);
 
-            return newFixedLengthResponse(msg + "</body></html>\n");
+                        if (result) {
+                            msg = "Success";
+                        } else {
+                            msg = "Failed";
+                        }
+
+                        String sMaskNRIC = sNRIC.replaceAll("\\w(?=\\w{4})", "*");
+                        EntryLog log = new EntryLog();
+                        log.setId(sUUID);
+                        log.setNric(sMaskNRIC);
+                        log.setProcess_date(sDate);
+                        databaseAccess.addEntryLog(log);
+                        preferences.setProcessF(getApplicationContext(), "0");
+                    } else {
+                        preferences.setProcessF(getApplicationContext(), "1");
+                    }
+                }
+                databaseAccess.close();
+                return newFixedLengthResponse(msg);
+            }
+            catch (Exception e){
+                return newFixedLengthResponse("Error");
+            }
         }
 
         public String convertWithIteration(Map<String, ?> map) {
             StringBuilder mapAsString = new StringBuilder("{");
             for (String key : map.keySet()) {
-                mapAsString.append(key + "=" + map.get(key) + ", ");
+                if(key == "idcardNum" || key == "deviceKey") {
+                    mapAsString.append(key + "=" + map.get(key) + ", ");
+                }
             }
             mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
             return mapAsString.toString();
