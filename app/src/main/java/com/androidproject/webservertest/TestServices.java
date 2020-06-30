@@ -62,7 +62,8 @@ public class TestServices extends Service {
         public Response serve(IHTTPSession session) {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
             databaseAccess.open();
-
+            Process process = new Process();
+            String deviceID = process.getDeviceID();
             String msg = "<html><body><h1>Hello server</h1>\n";
             Map<String, String> files = new HashMap<String, String>();
             Method method = session.getMethod();
@@ -82,7 +83,13 @@ public class TestServices extends Service {
                 param = convertWithIteration(postParameter);
                 RequestLog requestLog = new RequestLog();
                 requestLog.setId(UUID.randomUUID().toString());
-                requestLog.setRequest(method.toString() + param);
+                requestLog.setRequest(method.toString() + param +";DeviceKey:"+deviceID);
+                databaseAccess.addRequestLog(requestLog);
+            }
+            else{
+                RequestLog requestLog = new RequestLog();
+                requestLog.setId(UUID.randomUUID().toString());
+                requestLog.setRequest(method.toString()+";DeviceKey:"+deviceID);
                 databaseAccess.addRequestLog(requestLog);
             }
 
@@ -98,7 +105,7 @@ public class TestServices extends Service {
 
             if(ProcessF == "1") {
 
-                Process process = new Process();
+
                 boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
                 if (result) {
                     msg ="<p>Success</p>";

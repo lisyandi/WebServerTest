@@ -21,7 +21,7 @@ public class Process {
     private String Action;
     private String BranchCode, Name, AuthenticationCode, LastSetCookie, NextSetCookie, CookiePrefix, ProcessType, NRIC, CSRFToken, IdentifierType;
     private String CheckInCookie, CheckInCSRFToken, CheckOutCookie, CheckOutCSRFToken;
-    private String UrlLoginPage, UrlLoginProcess, UrlRedirect, UrlCheckInPage, UrlCheckInProcess, UrlCheckOutPage, UrlCheckOutProcess;
+    private String UrlLoginPage, UrlLoginProcess, UrlRedirect, UrlCheckInPage, UrlCheckInProcess, UrlCheckOutPage, UrlCheckOutProcess, UrlGetDeviceID;
     private boolean Result;
 
     public boolean SendToServer(){
@@ -290,5 +290,36 @@ public class Process {
             //Toast.makeText(this, "Error LoginProcess: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
+    }
+
+    public String getDeviceID(){
+        UrlGetDeviceID = "http://127.0.0.1:8090/getDeviceKey";
+        String deviceID = "";
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(5, TimeUnit.SECONDS);
+        builder.readTimeout(5, TimeUnit.SECONDS);
+        builder.writeTimeout(5, TimeUnit.SECONDS);
+
+        OkHttpClient client = builder.build();
+        Request request = new Request.Builder()
+                .url(UrlGetDeviceID)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String responseString = response.body().string();
+            try {
+                JSONObject objResponse = new JSONObject(responseString);
+                deviceID = objResponse.getString("data");
+            }
+            catch (JSONException ex){
+                ex.printStackTrace();
+            }
+        } catch (IOException e) {
+            Result = false;
+            e.printStackTrace();
+        }
+
+        return deviceID;
     }
 }
