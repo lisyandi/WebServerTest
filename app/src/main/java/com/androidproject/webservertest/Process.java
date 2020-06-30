@@ -34,8 +34,8 @@ public class Process {
         Result = false;
         Action  = pAction;
         CookiePrefix = "_ga=GA1.3.1997960644.1592482416; _gid=GA1.3.717040169.1592482416;";
-        UrlLoginPage = "https://www.safeentry.gov.sg/logins/new_clicker_login";
-        UrlLoginProcess = "https://www.safeentry.gov.sg/logins/create_clicker_login";
+        UrlLoginPage = "https://www.safeentry.gov.sg/scanner_login";
+        UrlLoginProcess = "https://www.safeentry.gov.sg/scanner_login";
         UrlCheckInPage = "https://www.safeentry.gov.sg/entries/manual_entry";
         UrlCheckInProcess = "https://www.safeentry.gov.sg/entries/record_entry";
         UrlCheckOutPage = "https://www.safeentry.gov.sg/entries/manual_exit";
