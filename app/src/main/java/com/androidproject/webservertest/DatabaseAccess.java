@@ -66,4 +66,23 @@ public class DatabaseAccess {
             return false;
         }
     }
+
+    public boolean addRequestLog(RequestLog log){
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put("id", log.getId());
+            cv.put("request", log.getRequest());
+
+            long result = db.insert("RequestLog", null, cv);
+            if (result == -1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        catch (SQLiteException e){
+            Log.w("Database Error :", e.getMessage());
+            return false;
+        }
+    }
 }

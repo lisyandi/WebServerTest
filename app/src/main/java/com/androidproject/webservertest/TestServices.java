@@ -9,9 +9,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,11 +60,32 @@ public class TestServices extends Service {
 
         @Override
         public Response serve(IHTTPSession session) {
-            String msg = "<html><body><h1>Hello server</h1>\n";
-            Map<String, String> parms = session.getParms();
-
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
             databaseAccess.open();
+
+            String msg = "<html><body><h1>Hello server</h1>\n";
+            Map<String, String> files = new HashMap<String, String>();
+            Method method = session.getMethod();
+            if (Method.PUT.equals(method) || Method.POST.equals(method)) {
+                try {
+                    session.parseBody(files);
+                } catch (IOException ioe) {
+                    //return new newFixedLengthResponse (Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+                } catch (ResponseException re) {
+                    //return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
+                }
+            }
+            //String postBody = session.getQueryParameterString();
+            String param = "";
+            Map<String, String> postParameter = session.getParms();
+            if(postParameter.size() != 0) {
+                param = convertWithIteration(postParameter);
+                RequestLog requestLog = new RequestLog();
+                requestLog.setId(UUID.randomUUID().toString());
+                requestLog.setRequest(method.toString() + param);
+                databaseAccess.addRequestLog(requestLog);
+            }
+
             Preferences preferences = new Preferences();
             //String LastNRIC = preferences.getLastNRIC(getApplicationContext());
             String ProcessF = preferences.getProcessF(getApplicationContext());
@@ -73,13 +97,14 @@ public class TestServices extends Service {
             String sMaskNRIC = sNRIC.replaceAll("\\w(?=\\w{4})", "X");
 
             if(ProcessF == "1") {
-                Process process = new Process();
-                boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
-                if (result) {
-                    msg ="<p>Success</p>";
-                } else {
-                    msg ="<p>Failed</p>";
-                }
+
+//                Process process = new Process();
+//                boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
+//                if (result) {
+//                    msg ="<p>Success</p>";
+//                } else {
+//                    msg ="<p>Failed</p>";
+//                }
 
                 EntryLog log = new EntryLog();
                 log.setId(UUID.randomUUID().toString());
@@ -95,6 +120,15 @@ public class TestServices extends Service {
             databaseAccess.close();
 
             return newFixedLengthResponse(msg + "</body></html>\n");
+        }
+
+        public String convertWithIteration(Map<String, ?> map) {
+            StringBuilder mapAsString = new StringBuilder("{");
+            for (String key : map.keySet()) {
+                mapAsString.append(key + "=" + map.get(key) + ", ");
+            }
+            mapAsString.delete(mapAsString.length()-2, mapAsString.length()).append("}");
+            return mapAsString.toString();
         }
     }
 }
