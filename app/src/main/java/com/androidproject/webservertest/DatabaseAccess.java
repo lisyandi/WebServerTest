@@ -42,6 +42,7 @@ public class DatabaseAccess {
             config.setCode(cursor.getString(0));
             config.setName(cursor.getString(1));
             config.setCheck_process(cursor.getString(2));
+            config.setUuid(cursor.getString(3));
         }
         cursor.close();
         return config;
