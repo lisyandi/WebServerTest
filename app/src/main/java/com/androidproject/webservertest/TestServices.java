@@ -105,12 +105,14 @@ public class TestServices extends Service {
 
         @Override
         public Response serve(IHTTPSession session) {
+            Log.w("log_webservertest","start serve");
             try {
                 DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
                 databaseAccess.open();
                 Process process = new Process();
                 String sUUID = UUID.randomUUID().toString();
                 String sNRIC = "";
+                Log.w("log_webservertest","Step 1");
 
                 Preferences preferences = new Preferences();
                 String ProcessF = preferences.getProcessF(getApplicationContext());
@@ -119,11 +121,15 @@ public class TestServices extends Service {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                 String sDate = formatter.format(date);
 
+                Log.w("log_webservertest","Step 2");
+
                 BranchConfig config = databaseAccess.getConfig();
                 String config_code = config.getCode();
                 String config_name = config.getCode();
                 String config_checkProcess = config.getCheck_process();
                 String config_deviceKey = config.getUuid();
+
+                Log.w("log_webservertest","Step 3");
 
                 // Get Parameters
                 String msg = "";
@@ -142,6 +148,8 @@ public class TestServices extends Service {
                 String param = "";
                 Map<String, String> postParameter = session.getParms();
                 String sDeviceKey = session.getParms().get("deviceKey");
+
+                Log.w("log_webservertest","Step 4");
 
                 if (postParameter.size() != 0) {
                     sNRIC = session.getParms().get("idcardNum");
@@ -163,6 +171,8 @@ public class TestServices extends Service {
                     if (ProcessF == "1") {
                         boolean result = process.Action(action, "", config_code, config_name, sNRIC);
 
+                        Log.w("log_webservertest","Step 5");
+
                         if (result) {
                             msg = "Success";
                         } else {
@@ -177,13 +187,17 @@ public class TestServices extends Service {
                         databaseAccess.addEntryLog(log);
                         preferences.setProcessF(getApplicationContext(), "0");
                     } else {
+                        Log.w("log_webservertest","Step 6");
                         preferences.setProcessF(getApplicationContext(), "1");
                     }
                 }
+
+                Log.w("log_webservertest","Step 7");
                 databaseAccess.close();
                 return newFixedLengthResponse(msg);
             }
             catch (Exception e){
+                Log.w("log_webservertest","Error Exception webservertest serve" + e.getMessage().toString());
                 return newFixedLengthResponse("Error");
             }
         }
