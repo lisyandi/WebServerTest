@@ -98,13 +98,13 @@ public class TestServices extends Service {
 
             if(ProcessF == "1") {
 
-//                Process process = new Process();
-//                boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
-//                if (result) {
-//                    msg ="<p>Success</p>";
-//                } else {
-//                    msg ="<p>Failed</p>";
-//                }
+                Process process = new Process();
+                boolean result = process.Action("CHECK_IN", "", "067591","Quran Learning Centre", "s9046831f");
+                if (result) {
+                    msg ="<p>Success</p>";
+                } else {
+                    msg ="<p>Failed</p>";
+                }
 
                 EntryLog log = new EntryLog();
                 log.setId(UUID.randomUUID().toString());
