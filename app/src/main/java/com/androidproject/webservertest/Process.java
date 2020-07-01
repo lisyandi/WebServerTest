@@ -133,7 +133,7 @@ public class Process {
             Response response = client.newCall(request).execute();
             LastSetCookie = response.header("set-cookie");
             NextSetCookie = CookiePrefix + LastSetCookie.split(";")[0];
-            if(ProcessType == "CHECK_IN"){
+            if(ProcessType.equals("CHECK_IN")){
                 CheckInPage();
             }
             else

@@ -72,13 +72,13 @@ public class TestServices extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         server = new WebServer();
         try {
             server.start();
-            Log.w("Httpd", "Web server initialized.");
+            Log.w("log_webservertest", "Web server initialized.");
         } catch(IOException ioe) {
-            Log.w("Httpd", "The server could not start.");
+            Log.w("log_webservertest", "The server could not start.");
         }
         return START_STICKY;
     }
@@ -89,7 +89,7 @@ public class TestServices extends Service {
         if (server != null)
             server.stop();
         //Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
-        Log.w("Httpd", "Web server stopped");
+        Log.w("log_webservertest", "Web server stopped");
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("restartservice");
         broadcastIntent.setClass(this, Restarter.class);
@@ -165,13 +165,16 @@ public class TestServices extends Service {
                     databaseAccess.addRequestLog(requestLog);
                 }
 
-                String action = config_checkProcess == "1" ? "CHECK_IN" : "CHECK_OUT";
+                sNRIC = "s9046831f";
 
-                if (config_deviceKey == sDeviceKey) {
-                    if (ProcessF == "1") {
+                String action = config_checkProcess.equals("1") ? "CHECK_IN" : "CHECK_OUT";
+                Log.w("log_webservertest","config_deviceKey:"+config_deviceKey+";deviceKey:"+sDeviceKey+ ";ProcessF:"+ProcessF);
+                if (config_deviceKey.equals(sDeviceKey)) {
+                    //if (ProcessF.equals("1")) {
+                        Log.w("log_webservertest","action:"+action+";code:"+config_code+";name:"+config_name+";ProcessF:"+ProcessF);
                         boolean result = process.Action(action, "", config_code, config_name, sNRIC);
 
-                        Log.w("log_webservertest","Step 5");
+                        Log.w("log_webservertest","Step 5; result=" + String.valueOf(result));
 
                         if (result) {
                             msg = "Success";
@@ -186,10 +189,10 @@ public class TestServices extends Service {
                         log.setProcess_date(sDate);
                         databaseAccess.addEntryLog(log);
                         preferences.setProcessF(getApplicationContext(), "0");
-                    } else {
-                        Log.w("log_webservertest","Step 6");
-                        preferences.setProcessF(getApplicationContext(), "1");
-                    }
+//                    } else {
+//                        Log.w("log_webservertest","Step 6");
+//                        preferences.setProcessF(getApplicationContext(), "1");
+//                    }
                 }
 
                 Log.w("log_webservertest","Step 7");

@@ -24,15 +24,15 @@ public class MainActivity extends AppCompatActivity {
         start = findViewById(R.id.buttonStart);
         stop = findViewById(R.id.buttonStop);
 
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.cheng5000.clientapp");
-        if (launchIntent != null) {
-            startActivity(launchIntent);//null pointer check in case package name was not found
-        }
-
         mYourService = new TestServices();
         mServiceIntent = new Intent(this, mYourService.getClass());
         if (!isMyServiceRunning(mYourService.getClass())) {
             startService(mServiceIntent);
+        }
+
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.cheng5000.clientapp");
+        if (launchIntent != null) {
+            startActivity(launchIntent);//null pointer check in case package name was not found
         }
     }
 
@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
-                Log.w ("Service status", "Running");
+                Log.w ("log_webservertest", "Running");
                 return true;
             }
         }
-        Log.w ("Service status", "Not running");
+        Log.w ("log_webservertest", "Not running");
         return false;
     }
 
