@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -149,6 +151,7 @@ public class TestServices extends Service {
                 String param = "";
                 Map<String, String> postParameter = session.getParms();
                 String sDeviceKey = session.getParms().get("deviceKey");
+                JSONObject jsonResult = new JSONObject();
 
                 Log.w("log_webservertest","Step 4");
 
@@ -166,8 +169,6 @@ public class TestServices extends Service {
                     databaseAccess.addRequestLog(requestLog);
                 }
 
-                sNRIC = "s9046831f";
-
                 String action = config_checkProcess.equals("1") ? "CHECK_IN" : "CHECK_OUT";
                 Log.w("log_webservertest","config_deviceKey:"+config_deviceKey+";deviceKey:"+sDeviceKey+ ";ProcessF:"+ProcessF);
                 if (config_deviceKey.equals(sDeviceKey)) {
@@ -178,8 +179,16 @@ public class TestServices extends Service {
                         Log.w("log_webservertest","Step 5; result=" + String.valueOf(result));
 
                         if (result) {
+                            jsonResult.put("result", 1);
+                            jsonResult.put("success", true);
+                            jsonResult.put("status", 200);
+                            jsonResult.put("msg","");
                             msg = "Success";
                         } else {
+                            jsonResult.put("result", 1);
+                            jsonResult.put("success", false);
+                            jsonResult.put("status", 200);
+                            jsonResult.put("msg","");
                             msg = "Failed";
                         }
 
