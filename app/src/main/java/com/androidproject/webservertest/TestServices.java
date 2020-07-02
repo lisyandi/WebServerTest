@@ -179,16 +179,16 @@ public class TestServices extends Service {
                         Log.w("log_webservertest","Step 5; result=" + String.valueOf(result));
 
                         if (result) {
-                            jsonResult.put("result", 1);
-                            jsonResult.put("success", true);
-                            jsonResult.put("status", 200);
-                            jsonResult.put("msg","");
+//                            jsonResult.put("result", 1);
+//                            jsonResult.put("success", true);
+//                            jsonResult.put("status", 200);
+//                            jsonResult.put("msg","");
                             msg = "Success";
                         } else {
-                            jsonResult.put("result", 1);
-                            jsonResult.put("success", false);
-                            jsonResult.put("status", 200);
-                            jsonResult.put("msg","");
+//                            jsonResult.put("result", 1);
+//                            jsonResult.put("success", false);
+//                            jsonResult.put("status", 200);
+//                            jsonResult.put("msg","");
                             msg = "Failed";
                         }
 
