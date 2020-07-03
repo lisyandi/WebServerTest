@@ -78,6 +78,10 @@ public class TestServices extends Service {
         //Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         server = new WebServer();
         try {
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
+            databaseAccess.open();
+            BranchConfig config = databaseAccess.getConfig();
+            databaseAccess.close();
             server.start();
             Log.w("log_webservertest", "Web server initialized.");
         } catch(IOException ioe) {
@@ -131,6 +135,9 @@ public class TestServices extends Service {
                 String config_name = config.getCode();
                 String config_checkProcess = config.getCheck_process();
                 String config_deviceKey = config.getUuid();
+
+
+                Log.w("log_webservertest",config.toString());
 
                 Log.w("log_webservertest","Step 3");
 
