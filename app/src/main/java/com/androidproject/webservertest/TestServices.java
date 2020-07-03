@@ -81,6 +81,7 @@ public class TestServices extends Service {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
             databaseAccess.open();
             BranchConfig config = databaseAccess.getConfig();
+            Log.w("log_webservertest", config.toString());
             databaseAccess.close();
             server.start();
             Log.w("log_webservertest", "Web server initialized.");
@@ -132,12 +133,9 @@ public class TestServices extends Service {
 
                 BranchConfig config = databaseAccess.getConfig();
                 String config_code = config.getCode();
-                String config_name = config.getCode();
+                String config_name = config.getName();
                 String config_checkProcess = config.getCheck_process();
                 String config_deviceKey = config.getUuid();
-
-
-                Log.w("log_webservertest",config.toString());
 
                 Log.w("log_webservertest","Step 3");
 
@@ -177,10 +175,13 @@ public class TestServices extends Service {
                 }
 
                 String action = config_checkProcess.equals("1") ? "CHECK_IN" : "CHECK_OUT";
-                Log.w("log_webservertest","config_deviceKey:"+config_deviceKey+";deviceKey:"+sDeviceKey+ ";ProcessF:"+ProcessF);
+
+                Log.w("log_webservertest", config.toString());
+                Log.w("log_webservertest","action:"+action+";code:"+config_code+";name:"+config_name+";NRIC:"+sNRIC);
+                Log.w("log_webservertest","config_deviceKey:"+config_deviceKey+";deviceKey:"+sDeviceKey);
                 if (config_deviceKey.equals(sDeviceKey)) {
                     //if (ProcessF.equals("1")) {
-                        Log.w("log_webservertest","action:"+action+";code:"+config_code+";name:"+config_name+";ProcessF:"+ProcessF);
+
                         boolean result = process.Action(action, "", config_code, config_name, sNRIC);
 
                         Log.w("log_webservertest","Step 5; result=" + String.valueOf(result));
