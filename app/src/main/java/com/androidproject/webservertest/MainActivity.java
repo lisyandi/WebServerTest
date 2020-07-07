@@ -21,8 +21,8 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        start = findViewById(R.id.buttonStart);
-        stop = findViewById(R.id.buttonStop);
+        //start = findViewById(R.id.buttonStart);
+        //stop = findViewById(R.id.buttonStop);
 
         mYourService = new TestServices();
         mServiceIntent = new Intent(this, mYourService.getClass());

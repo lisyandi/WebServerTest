@@ -12,7 +12,7 @@ public class Autostart extends BroadcastReceiver {
     public void onReceive(Context context, Intent arg1) {
         // TODO Auto-generated method stub
         Log.w("log_webservertest", "starting service from boot completed");
-        Toast.makeText(context,"Service Started", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context,"Service Started", Toast.LENGTH_SHORT).show();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(new Intent(context, TestServices.class));
